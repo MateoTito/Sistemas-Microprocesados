@@ -13,7 +13,6 @@ int pins [6] = {2, 3, 4, 5, 6, 7}; //Pines a usarse
 int rng = 0; //Variable entera para usar aleatorio(luego)
 
 void setup() {
-  randomSeed(40);
   for(;i<6;i++){
     pinMode(pins[i],OUTPUT); //Definir pines como salidas
   }
