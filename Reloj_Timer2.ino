@@ -48,7 +48,7 @@ void reloj() { //Método para el Timer
   if (minutos < 10) //Unidades del minutero
     hour2 = "0" + String(minutos); //Concatena al contador
   else //Decenas del minutero
-    hour2 = String(segundos); //Asigna al String
+    hour2 = String(minutos); //Asigna al String
   if (horas < 10) //Unidades del horero
     hour1 = "0" + String(horas); //Concatena al contador
   else //Decenas del horero
