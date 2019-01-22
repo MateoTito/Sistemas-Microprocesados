@@ -1,3 +1,5 @@
+#include <EEPROM.h>
+
 #include <avr/wdt.h> //Librería perro guardían (reinicio sistema)
 
 /*
@@ -22,6 +24,13 @@
                 pin7 -> botón 1 (Ingresa 1 a la pass)
                 pin8 -> botón 2 (Ingresa 2 a la pass)
                 pin9 -> botón 3 (Ingresa 3 a la pass)
+   Memoria EEPROM:
+                pos0 -> pass digito 1
+                pos1 -> pass digito 2
+                pos2 -> pass digito 3
+                pos3 -> pass digito 4
+                pos4 -> pass digito 5
+                pos5 -> Si el sistema re reinició o no
 */
 //Variables del sistema
 int mas = 0; //Variable para controlar opciones
@@ -41,14 +50,32 @@ int contra_4;
 int contra_5;
 int contra [5] = {contra_1, contra_2, contra_3, contra_4, contra_5}; //Array pass
 void setup() {
+  //Cargar al arduino una sola vez contraseña por defecto 12321
+//  EEPROM.write(1, 0); 
+//  EEPROM.write(2, 1);
+//  EEPROM.write(3, 2);
+//  EEPROM.write(2, 3);
+//  EEPROM.write(1, 4);
+//  EEPROM.write(0, 5);
   Serial.begin(9600); //Inicia Cx
   randomSeed(analogRead(0)); //Semilla de random, lee ruido eléctrico
+  if (EEPROM.read(5) == 1) { //Si se reinicia el sistema asigna pass random
   contra_1 = random(1, 4); //Asigna números random
   contra_2 = random(1, 4);
   contra_3 = random(1, 4);
   contra_4 = random(1, 4);
   contra_5 = random(1, 4);
   int contra [5] = {contra_1, contra_2, contra_3, contra_4, contra_5}; //Asigna contraseña con #'s random
+  EEPROM.write(5, 0);
+  } else if (EEPROM.read(5) == 0) { //Si el sistema inicia normalmente lee la pass anterior
+    contra_1 = EEPROM.read(0);
+    contra_2 = EEPROM.read(1);
+    contra_3 = EEPROM.read(2);
+    contra_4 = EEPROM.read(3);
+    contra_5 = EEPROM.read(4);
+    int contra [5] = {contra_1, contra_2, contra_3, contra_4, contra_5}; //Asigna contraseña
+    EEPROM.write(5, 0);
+  }
   Serial.println(String(contra[0]) + String(contra[1]) + String(contra[2]) + String(contra[3]) + String(contra[4]));
   attachInterrupt(0, master, LOW); //Botón Master
   pinMode(b1, INPUT); //Botones para contraseña 1
@@ -118,6 +145,7 @@ int contra [5] = {contra_1, contra_2, contra_3, contra_4, contra_5};
           } else { //Si se queda sin intentos
             Serial.println("REINICIADO");
             Serial.print("LA NUEVA PASS ES: ");
+            EEPROM.write(5, 1);
             wdt_enable(WDTO_1S); //Reinicia el sistema
           }
         }
